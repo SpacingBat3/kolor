@@ -1,17 +1,17 @@
 {
   "name": "@spacingbat3/kolor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple module to colorize your Node.js console.",
   "main": "dist/index.js",
   "scripts": {
     "lint": "tsc && eslint --ext ts .",
     "test": "tsc -b -f && node test/dist/example.js",
-    "postinstall": "tsc -b",
-    "prepack": "tsc"
+    "prepack": "tsc",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SpacingBat3/recolored.git"
+    "url": "git+https://github.com/SpacingBat3/kolor.git"
   },
   "keywords": [
     "colors",
@@ -22,12 +22,16 @@
     "library",
     "module"
   ],
-  "author": "SpacingBat3",
+  "author": {
+    "name": "SpacingBat3",
+    "email": "git@spacingbat3.anonaddy.com",
+    "url": "https://github.com/SpacingBat3"
+  },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/SpacingBat3/recolored/issues"
+    "url": "https://github.com/SpacingBat3/kolor/issues"
   },
-  "homepage": "https://github.com/SpacingBat3/recolored#readme",
+  "homepage": "https://github.com/SpacingBat3/kolor#readme",
   "devDependencies": {
     "@types/node": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
