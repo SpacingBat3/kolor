@@ -1,0 +1,9 @@
+*.tgz
+*.d.ts.map
+tsconfig.json
+.gitignore
+.eslint*
+test/
+src/
+.cache/
+.git/
