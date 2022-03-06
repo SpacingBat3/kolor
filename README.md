@@ -44,9 +44,8 @@ personal needs, if you need something more complex just use another library.
 
 Please note it's syntax is not fully compatible with `colors`, specifically it
 is not touching the `String.prototype`. You may find it easier to move from
-through when you're using `colors/safe`, through. If you need a library that
-uses `String.prototype` to easily switch from `colors`, this module is not for
-you, neither `chalk` is.
+`colors/safe`, through. If you need a library that uses `String.prototype` to
+easily switch from `colors`, this module is not for you, neither `chalk` is.
 
 ## Why not just use `chalk` or fork of `colors`?
 
@@ -58,9 +57,9 @@ for now) only to 16-bit color pallete. It might be however much more performant,
 as it uses ES2021 features to be much shorter, simplier and not being *bloated*
 with unnecesary colors.
 
-The key feature you might enjoy is that it is capable of using some console
-specific ANSI escape codes just so you can use some features unsupported by all
-terminals, like ~~`strikethrough`~~ or *`italic`* if you really need or want to.
+Another difference (at least from `colors`) is that `kolor` separates some
+ANSI escape codes that are not working on all platforms, which you may find
+usefull if your application is meant to be cross-platform.
 
 ## Legal
 

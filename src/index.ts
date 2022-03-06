@@ -7,44 +7,41 @@ enum modifiers_safe {
 enum modifiers_other {
     grayedOut=2,
     italic,
-    blink=5,
-    blink_2,
+    slowBlink=5,
+    rapidBlink,
     strikethrough = 9
 }
 
-enum colors_16bit {
-    black = 30,
-    red,
-    green,
-    yellow,
-    blue,
-    purple,
-    cyan,
-    white,
-    blackBg = 40,
-    redBg,
-    greenBg,
-    yellowBg,
-    blueBg,
-    magentaBg,
-    cyanBg,
-    whiteBg,
-    gray = 90,
-    brightRed,
-    brightGreen,
-    brightYellow,
-    brightBlue,
-    brightMagenta,
-    brightCyan,
-    brightWhite,
-    grayBg = 100,
-    brightRedBg,
-    brightGreenBg,
-    brightYellowBg,
-    brightBlueBg,
-    brightMagentaBg,
-    brightCyanBg,
-    brightWhiteBg
+function generateColors() {
+    const colors = [
+        'black',
+        'red',
+        'green',
+        'yellow',
+        'blue',
+        'magenta',
+        'white'
+    ] as const
+
+    /** A type that contains definiftion of all 16-bit colors variants */
+    interface Colors {
+        regular: typeof colors[number];
+        bg: `${typeof colors[number]}Bg`
+        bright: `bright${Capitalize<typeof colors[number]>}`;
+        brightBg: `bright${Capitalize<typeof colors[number]>}Bg`;
+    }
+
+    const colorsObject = ({} as Record<Colors[keyof Colors], number>);
+    for (const color of colors) {
+        const capitalizeColor = color.charAt(0).toUpperCase()+color.slice(1);
+        const value = 30 + colors.indexOf(color);
+        colorsObject[color] = value;
+        colorsObject[color+'Bg' as Colors['bg']] = value + 10;
+        colorsObject['bright'+capitalizeColor as Colors['bright']] = value + 60
+        colorsObject['bright'+capitalizeColor+'Bg' as Colors['brightBg']] = value + 70
+    }
+
+    return colorsObject;
 }
 
 type RecordLog<T extends Record<string,unknown>> = Record<keyof T, (value:string)=>string>;
@@ -56,7 +53,13 @@ function shouldUseColors() {
         case  "never":
             return false;
         default:
-            return (process.stdout.isTTY === true && process.stderr.isTTY === true);
+            return (
+                // Detect if process it not piped
+                process.stdout.isTTY === true && process.stderr.isTTY === true
+            ) || (
+                // Workaround for Electron on Windows
+                "electron" in process.versions && process.platform === "win32"
+            );
     }
 }
 
@@ -75,6 +78,29 @@ function enum2func<T extends Record<string,number|string>>(em: T) {
     return functions;
 }
 
+function getFuncWithAliases() {
+    const colors = enum2func(generateColors());
+    return {
+        ...colors,
+        /** An alias of `colors.magenta`. */
+        purple: colors.magenta,
+        /** An alias of `colors.magentaBg`. */
+        purpleBg: colors.magentaBg,
+        /** An alias of `colors.white`. */
+        lightGray: colors.white,
+        /** An alias of `colors.white`. */
+        lightGrey: colors.white,
+        /** An alias of `colors.brightBlack`. */
+        gray: colors.brightBlack,
+        /** An alias of `colors.brightBlack`. */
+        grey: colors.brightBlack,
+        /** An alias of `colors.brightBlackBg`. */
+        grayBg: colors.brightBlackBg,
+        /** An alias of `colors.brightBlackBg`. */
+        greyBg: colors.brightBlackBg
+    }
+}
+
 /** 
  * An object containing multiple functions used to colorize the text.
  * 
@@ -82,7 +108,7 @@ function enum2func<T extends Record<string,number|string>>(em: T) {
  * // Print error in the console.
  * console.error(colors.red("[Error]")+" Something's not right...")
  */
-export const colors = enum2func(colors_16bit);
+export const colors = getFuncWithAliases();
 export const modifiers = {
     /**
      * Modifiers working fine across most popular platfroms/consoles.
