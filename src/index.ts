@@ -20,6 +20,7 @@ function generateColors() {
         'yellow',
         'blue',
         'magenta',
+        'cyan',
         'white'
     ] as const
 
