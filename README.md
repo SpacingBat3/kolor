@@ -6,8 +6,7 @@ A simple Node.js module to add *kolors* to you console!
 
 ## Usage:
 
-If you're on JS with CommonJS, you can use `require()` if you need to load it,
-just remember that with 2nd method `default` element is imported.
+### ESM / TypeScript:
 
 1. Importing selected group of functions (`colors` or `modifiers[*]`):
 ```ts
@@ -27,6 +26,30 @@ import colors from "@spacingbat3/kolor"
 
 // Now, syntax is similar to the one in `colors/safe` module.
 console.warn(colors.bold("==> "+colors.brightYellow("Warning:"))+" Something happened!")
+```
+
+### CommonJS: 
+
+```js
+// Synchroniously with `require` (CommonJS):
+const { colors, modifiers } = require("@spacingbat3/kolor")
+
+console.log(colors.purple("Colored text goes here."));
+
+// or, with "default" object
+
+const colors_2 = require("@spacingbat3/kolor").default;
+
+console.log(colors_2.purple("Colored text goes here."));
+
+// Async with `import` (ESM):
+import("@spacingbat3/kolor")
+   .then(kolor => {
+      // Here, default, colors and modifiers objects are available.
+      const { colors, modifiers } = kolor;
+      console.debug(colors.gray(colors.bold("Debug")+": some information goes here!"));
+   })
+   .catch(e => console.error(e));
 ```
 
 ## Why I started to develop it?
@@ -50,16 +73,15 @@ easily switch from `colors`, this module is not for you, neither `chalk` is.
 ## Why not just use `chalk` or fork of `colors`?
 
 This project has a different philosophy that both of these projects. It's
-neither an ESM module nor has any rich features – it's much more simple, using
-some features that are TypeScript-specific like `enums`, doing only some simple
-tests to detect if text should be colorized or not and being limited (at least
-for now) only to 16-bit color pallete. It might be however much more performant,
-as it uses ES2021 features to be much shorter, simplier and not being *bloated*
-with unnecesary colors.
+neither an ESM module nor has any rich features – it's much more simple, doing
+only some simple tests to detect if text should be colorized or not and being
+limited (at least for now) only to 16-bit color pallete. It might be however
+much more performant, as it uses ES2021 features to be much shorter, simplier
+and not being *bloated* with unnecesary colors.
 
 Another difference (at least from `colors`) is that `kolor` separates some
 ANSI escape codes that are not working on all platforms, which you may find
-usefull if your application is meant to be cross-platform.
+useful if your application is meant to be cross-platform.
 
 ## Legal
 

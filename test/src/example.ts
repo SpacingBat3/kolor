@@ -1,4 +1,4 @@
-import {colors, modifiers} from "../../dist";
+import {colors, modifiers} from "@spacingbat3/kolor";
 
 function printAll(name:string, object:Record<string,(x:string)=>string>) {
     console.log(name+":");

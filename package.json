@@ -1,8 +1,21 @@
 {
   "name": "@spacingbat3/kolor",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "A simple module to colorize your Node.js console.",
   "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./types/index.d.ts",
+          "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./types/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
   "scripts": {
     "lint": "tsc && eslint --ext ts .",
     "test": "tsc -b -f && node test/dist/example.js",

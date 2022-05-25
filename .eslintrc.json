@@ -10,6 +10,7 @@
             "./test/tsconfig.json"
         ]
     },
+    "ignorePatterns": ["*.d.ts*"],
     "plugins": ["@typescript-eslint"],
     "extends": [
         "eslint:recommended",

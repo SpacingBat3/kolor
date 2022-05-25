@@ -5,5 +5,4 @@ tsconfig.json
 .eslint*
 test/
 src/
-.cache/
-.git/
+.*/
