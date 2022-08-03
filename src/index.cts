@@ -1,51 +1,45 @@
-const modifiers_safe = {
-    bold: 1,
-    underscore: 4,
-    invert: 7,
-} as const
+import {inspect} from "util";
 
-const modifiers_other = {
-    grayedOut: 2,
-    italic: 3,
-    slowBlink: 5,
-    rapidBlink: 6,
-    strikethrough: 9
-} as const
+type PalleteBase = "black"|"red"|"green"|"yellow"|"blue"|"magenta"|"cyan"|"white";
+type PalleteForeground = PalleteBase|"gray"|`${Exclude<PalleteBase,"black">}Bright`;
+type PalleteBackground = `bg${Capitalize<PalleteForeground>}`;
+type Pallete = PalleteForeground|PalleteBackground;
 
-function generateColors() {
-    const colors = [
-        'black',
-        'red',
-        'green',
-        'yellow',
-        'blue',
-        'magenta',
-        'cyan',
-        'white'
-    ] as const
+const capitalize = (string:string) => string.charAt(0).toUpperCase()+string.slice(1)
 
-    /** A type that contains definiftion of all 16-bit colors variants */
-    interface Colors {
-        regular: typeof colors[number];
-        bg: `${typeof colors[number]}Bg`
-        bright: `bright${Capitalize<typeof colors[number]>}`;
-        brightBg: `bright${Capitalize<typeof colors[number]>}Bg`;
-    }
+const modifiers_safe = Object.freeze([
+    "reset",
+    "bold",
+    "underline",
+    "inverse"
+] as const)
 
-    const colorsObject = ({} as Record<Colors[keyof Colors], number>);
-    for (const color of colors) {
-        const capitalizeColor = color.charAt(0).toUpperCase()+color.slice(1);
-        const value = 30 + colors.indexOf(color);
-        colorsObject[color] = value;
-        colorsObject[color+'Bg' as Colors['bg']] = value + 10;
-        colorsObject['bright'+capitalizeColor as Colors['bright']] = value + 60
-        colorsObject['bright'+capitalizeColor+'Bg' as Colors['brightBg']] = value + 70
-    }
+const modifiers_other = Object.freeze([
+    "dim",
+    "italic",
+    "blink",
+    "hidden",
+    "strikethrough",
+    "doubleunderline",
+    "framed",
+    "overlined"
+] as const);
 
-    return colorsObject;
-}
+const colors_util = Object.freeze([
+    "black",
+    "red",
+    "green",
+    "yellow",
+    "blue",
+    "magenta",
+    "cyan",
+    "white"
+].flatMap(color => {
+    const bright = color === "black" ? "gray" : color+"Bright"
+    return [color, bright, "bg"+capitalize(color), "bg"+capitalize(bright)]
+}) as Pallete[]);
 
-type RecordLog<T extends Record<string,unknown>> = Record<keyof T, (value:string)=>string>;
+type RecordLog<T extends readonly string[]> = Record<T[number], (value:string)=>string>;
 
 function shouldUseColors() {
     switch(process.argv.toString().match(/--color(?:,|=)(always|auto|never)/)?.[1] ?? "auto") {
@@ -64,41 +58,44 @@ function shouldUseColors() {
     }
 }
 
-function enum2func<T extends Record<string,number|string>>(em: T) {
+function tuple2function<T extends readonly string[]>(tuple: T) {
     const functions = ({} as RecordLog<T>);
-    // Generate colors functions:
-    for(const key in em) {
-        if(/^[0-9]+$/.test(key)) continue;
-        functions[key as keyof T] = (value) => {
-            if(shouldUseColors())
-                return "\x1b["+em[key].toString()+'m'+value+"\x1b[0m";
-            else
-                return value;
-        }
+    // Generate color functions:
+    for(const element of tuple) {
+        const ANSICode = inspect.colors[element]?.[0].toString()
+        if(ANSICode)
+            functions[element as T[number]] = (value) => {
+                if(shouldUseColors())
+                    return "\x1b["+ANSICode+'m'+value+"\x1b[0m";
+                else
+                    return value;
+            }
+        else
+            functions[element as T[number]] = (value) => value;
     }
     return functions;
 }
 
 function getFuncWithAliases() {
-    const colors = enum2func(generateColors());
+    const colors = tuple2function(colors_util);
     return {
         ...colors,
         /** An alias of `colors.magenta`. */
         purple: colors.magenta,
         /** An alias of `colors.magentaBg`. */
-        purpleBg: colors.magentaBg,
+        bgPurple: colors.bgMagenta,
         /** An alias of `colors.white`. */
         lightGray: colors.white,
         /** An alias of `colors.white`. */
         lightGrey: colors.white,
-        /** An alias of `colors.brightBlack`. */
-        gray: colors.brightBlack,
-        /** An alias of `colors.brightBlack`. */
-        grey: colors.brightBlack,
+        /** An alias of `colors.gray`. */
+        grey: colors.gray,
+        /** An alias of `colors.gray`. */
+        blackBright: colors.gray,
         /** An alias of `colors.brightBlackBg`. */
-        grayBg: colors.brightBlackBg,
+        bgGrey: colors.bgGray,
         /** An alias of `colors.brightBlackBg`. */
-        greyBg: colors.brightBlackBg
+        bgBlackBright: colors.bgGray
     }
 }
 
@@ -114,11 +111,11 @@ export const modifiers = {
     /**
      * Modifiers working fine across most popular platfroms/consoles.
      */
-    safe: enum2func(modifiers_safe),
+    safe: tuple2function(modifiers_safe),
     /**
      * Other modifiers that may not work with all consoles (e.g. `cmd.exe`).
      */
-    other: enum2func(modifiers_other)
+    other: tuple2function(modifiers_other)
 }
 
 const defaultExport = {
