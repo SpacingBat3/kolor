@@ -61,15 +61,16 @@ function shouldUseColors() {
 function tuple2function<T extends readonly string[]>(tuple: T) {
     const functions = ({} as RecordLog<T>);
     // Generate color functions:
-    for(const element of tuple) {
-        const ANSICode = inspect.colors[element]?.[0].toString()
-        if(ANSICode)
+    for (const element of tuple) {
+        const ANSICode = inspect.colors[element]?.[0].toString();
+        const ANSIEscape = ANSICode ? "\x1b[" + ANSICode + 'm' : undefined;
+        if (ANSIEscape)
             functions[element as T[number]] = (value) => {
-                if(shouldUseColors())
-                    return "\x1b["+ANSICode+'m'+value+"\x1b[0m";
+                if (shouldUseColors())
+                    return ANSIEscape + value.replace("\x1b[0m","\x1b[0m"+ANSIEscape) + "\x1b[0m";
                 else
                     return value;
-            }
+            };
         else
             functions[element as T[number]] = (value) => value;
     }
