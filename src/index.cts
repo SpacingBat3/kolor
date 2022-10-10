@@ -66,13 +66,19 @@ function tuple2function<T extends readonly string[]>(tuple: T) {
         const ANSIEscape = ANSICode ? "\x1b[" + ANSICode + 'm' : undefined;
         if (ANSIEscape)
             functions[element as T[number]] = (value) => {
+                if(typeof value !== "string")
+                    throw new TypeError("Parameter 'value' should be of type 'string'.");
                 if (shouldUseColors())
                     return ANSIEscape + value.replace("\x1b[0m","\x1b[0m"+ANSIEscape) + "\x1b[0m";
                 else
                     return value;
             };
         else
-            functions[element as T[number]] = (value) => value;
+            functions[element as T[number]] = (value) => {
+                if(typeof value !== "string")
+                    throw new TypeError("Parameter 'value' should be of type 'string'.");
+                return value;
+            };
     }
     return functions;
 }
