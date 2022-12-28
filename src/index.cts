@@ -1,11 +1,8 @@
 import {inspect} from "util";
 
-type PalleteBase = "black"|"red"|"green"|"yellow"|"blue"|"magenta"|"cyan"|"white";
-type PalleteForeground = PalleteBase|"gray"|`${Exclude<PalleteBase,"black">}Bright`;
-type PalleteBackground = `bg${Capitalize<PalleteForeground>}`;
-type Pallete = PalleteForeground|PalleteBackground;
+type RecordLog<T extends readonly string[]> = Record<T[number], (value:string)=>string>;
 
-const capitalize = (string:string) => string.charAt(0).toUpperCase()+string.slice(1)
+const capitalize = <T extends string>(string:T) => string.charAt(0).toUpperCase()+string.slice(1) as Capitalize<T>;
 
 const modifiers_safe = Object.freeze([
     "reset",
@@ -25,7 +22,7 @@ const modifiers_other = Object.freeze([
     "overlined"
 ] as const);
 
-const colors_util = Object.freeze([
+const colors_util = Object.freeze(([
     "black",
     "red",
     "green",
@@ -34,12 +31,10 @@ const colors_util = Object.freeze([
     "magenta",
     "cyan",
     "white"
-].flatMap(color => {
-    const bright = color === "black" ? "gray" : color+"Bright"
-    return [color, bright, "bg"+capitalize(color), "bg"+capitalize(bright)]
-}) as Pallete[]);
-
-type RecordLog<T extends readonly string[]> = Record<T[number], (value:string)=>string>;
+] as const).flatMap(color => {
+    const bright = color === "black" ? "gray" : `${color}Bright` as const;
+    return [color, bright, `bg${capitalize(color)}`, `bg${capitalize(bright)}`] as const
+}));
 
 function shouldUseColors() {
     switch(process.argv.toString().match(/--color(?:,|=)(always|auto|never)/)?.[1] ?? "auto") {
@@ -50,7 +45,7 @@ function shouldUseColors() {
         default:
             return (
                 // Detect if process it not piped
-                process.stdout.isTTY === true && process.stderr.isTTY === true
+                process.stdout.isTTY && process.stderr.isTTY
             ) || (
                 // Workaround for Electron on Windows
                 "electron" in process.versions && process.platform === "win32"
@@ -99,9 +94,9 @@ function getFuncWithAliases() {
         grey: colors.gray,
         /** An alias of `colors.gray`. */
         blackBright: colors.gray,
-        /** An alias of `colors.brightBlackBg`. */
+        /** An alias of `colors.bgGray. */
         bgGrey: colors.bgGray,
-        /** An alias of `colors.brightBlackBg`. */
+        /** An alias of `colors.bgGray`. */
         bgBlackBright: colors.bgGray
     }
 }
@@ -114,6 +109,11 @@ function getFuncWithAliases() {
  * console.error(colors.red("[Error]")+" Something's not right...")
  */
 export const colors = getFuncWithAliases();
+/**
+ * An object grouped by platform support, including functions to tranform text
+ * in the console to change it appearance (e.g. make it underlined) rather than
+ * just set a specific font color.
+ */
 export const modifiers = {
     /**
      * Modifiers working fine across most popular platfroms/consoles.
