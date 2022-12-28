@@ -36,7 +36,7 @@ const colors_util = Object.freeze(([
     return [color, bright, `bg${capitalize(color)}`, `bg${capitalize(bright)}`] as const
 }));
 
-function shouldUseColors() {
+const shouldUseColors = (() => {
     switch(process.argv.toString().match(/--color(?:,|=)(always|auto|never)/)?.[1] ?? "auto") {
         case "always":
             return  true;
@@ -51,7 +51,7 @@ function shouldUseColors() {
                 "electron" in process.versions && process.platform === "win32"
             );
     }
-}
+})();
 
 function tuple2function<T extends readonly string[]>(tuple: T) {
     const functions = ({} as RecordLog<T>);
@@ -63,7 +63,7 @@ function tuple2function<T extends readonly string[]>(tuple: T) {
             functions[element as T[number]] = (value) => {
                 if(typeof value !== "string")
                     throw new TypeError("Parameter 'value' should be of type 'string'.");
-                if (shouldUseColors())
+                if (shouldUseColors)
                     return ANSIEscape + value.replace("\x1b[0m","\x1b[0m"+ANSIEscape) + "\x1b[0m";
                 else
                     return value;
