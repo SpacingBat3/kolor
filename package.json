@@ -18,9 +18,10 @@
   },
   "scripts": {
     "lint": "tsc && eslint --ext ts .",
-    "test": "tsc -b -f && node test/dist/example.js",
+    "test": "tsc -b tests && node tests/dist/colors.js",
     "prepack": "tsc",
-    "build": "tsc"
+    "build": "tsc",
+    "example": "tsc -b example && node example/dist/index.ts"
   },
   "repository": {
     "type": "git",
