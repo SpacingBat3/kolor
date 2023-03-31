@@ -2,4 +2,4 @@
 import lib from "./index.cjs";
 export const { colors, modifiers } = lib;
 // Removes duplicate '.default' property.
-export default lib.default
+export default lib.default;

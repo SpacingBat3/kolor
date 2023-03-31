@@ -10,5 +10,4 @@ function printAll(name:string, object:Record<string,(x:string)=>string>) {
 
 printAll("Colors",colors);
 printAll(modifiers.other.italic("Safe")+" modifiers",modifiers.safe);
-printAll("Other modifiers (not all of them may work for every console)",modifiers
-.other)
+printAll("Other modifiers (not all of them may work for every console)",modifiers.other);
