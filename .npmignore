@@ -1,8 +1,13 @@
+# Node.js packages
 *.tgz
-types/*.map
-tsconfig.json
-.gitignore
-.eslint*
-test/
-src/
-.*/
+# TypeScript build configuration
+*tsconfig*.json
+# Any kind of lock files
+*lock*
+# Documentation (if available)
+docs/
+# Non-library code
+example/
+tests/
+# Hidden files and folders
+.*

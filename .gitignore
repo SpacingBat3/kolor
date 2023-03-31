@@ -1,9 +1,15 @@
+# NPM generated stuff
+*.tgz
 node_modules/
-.cache/
+# TSC generated stuff
 dist/
 types/
 *.js
 *.map
 *.d.ts
-*.tgz
-package-lock.json
+# Lockfiles (for people using alternative package managers)
+*lock*
+!package-lock.json
+# Hidden folders
+.*/
+!.github/
