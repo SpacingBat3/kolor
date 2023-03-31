@@ -2,8 +2,8 @@ import {colors, modifiers} from "@spacingbat3/kolor";
 
 function printAll(name:string, object:Record<string,(x:string)=>string>) {
     console.log(name+":");
-    for (const key in object) {
-        console.log(" • "+object[key](key));
+    for (const key of Object.keys(object)) {
+        console.log(" • "+(object[key]?.(key)??"invalid"));
     }
     console.log();
 }

@@ -1,4 +1,4 @@
-import {inspect} from "util";
+import util = require("util");
 
 type RecordLog<T extends readonly string[]> = Record<T[number], (value:string)=>string>;
 
@@ -57,7 +57,7 @@ function tuple2function<T extends readonly string[]>(tuple: T) {
     const functions = ({} as RecordLog<T>);
     // Generate color functions:
     for (const element of tuple) {
-        const ANSICode = inspect.colors[element]?.[0].toString();
+        const ANSICode = util.inspect.colors[element]?.[0].toString();
         const ANSIEscape = ANSICode ? "\x1b[" + ANSICode + 'm' : undefined;
         if (ANSIEscape)
             functions[element as T[number]] = (value) => {
@@ -108,13 +108,13 @@ function getFuncWithAliases() {
  * // Print error in the console.
  * console.error(colors.red("[Error]")+" Something's not right...")
  */
-export const colors = getFuncWithAliases();
+const colors = Object.freeze(getFuncWithAliases());
 /**
  * An object grouped by platform support, including functions to tranform text
  * in the console to change it appearance (e.g. make it underlined) rather than
  * just set a specific font color.
  */
-export const modifiers = {
+const modifiers = Object.freeze({
     /**
      * Modifiers working fine across most popular platfroms/consoles.
      */
@@ -123,12 +123,16 @@ export const modifiers = {
      * Other modifiers that may not work with all consoles (e.g. `cmd.exe`).
      */
     other: tuple2function(modifiers_other)
-}
+})
 
-const defaultExport = {
+const defaultExport = Object.freeze({
     ...colors,
     ...modifiers.safe,
     unsafe: modifiers.other
-}
+})
 
-export default defaultExport;
+export = Object.freeze({
+    default: defaultExport,
+    colors,
+    modifiers
+})

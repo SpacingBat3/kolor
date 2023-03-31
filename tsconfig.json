@@ -1,40 +1,16 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-     /* Enable incremental compilation */
-    "incremental": true,
     /* Specify the folder for .tsbuildinfo incremental compilation files. */
     "tsBuildInfoFile": "./.cache/buildInfo.json",
-    /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    "target": "es2021",
-    /* Specify a set of bundled library declaration files that describe the target runtime environment. */
-    "lib": ["ES2021"],
-    /* Specify what module code is generated. */
-    "module": "Node16",
-    /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
-    "declaration": true,
-    "declarationMap": true,
-    /* Create source map files for emitted JavaScript files. */
-    "sourceMap": true,
     /* Specify an output folder for all emitted files. */
     "outDir": "./dist/",
-    /* Ensure that casing is correct in imports. */
-    "forceConsistentCasingInFileNames": true,
-    /* Enable all strict type-checking options. */
-    "strict": true,
-    /* Skip type checking all .d.ts files. */
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "declarationDir": "types",
-    "plugins": [
-      {"name": "typescript-eslint-language-service"}
-    ]
+    /* Path where are emitted declaration files and their source maps. */
+    "declarationDir": "types"
   },
-  "files": [
-    "src/index.cts",
-    "src/index.ts"
-  ],
+  "files": ["src/index.cts", "src/index.ts"],
   "references": [
-    {"path": "example/tsconfig.json"},
-    {"path": "tests/tsconfig.json"}
+    { "path": "example/tsconfig.json" },
+    { "path": "tests/tsconfig.json" }
   ]
 }
