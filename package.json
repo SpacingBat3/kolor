@@ -18,7 +18,7 @@
     }
   },
   "scripts": {
-    "lint": "tsc && eslint --ext ts .",
+    "lint": "tsc && eslint --cache --cache-location .cache/eslint.json --ext ts .",
     "test": "tsc -b tests && node tests/dist/colors.js",
     "prepack": "tsc",
     "build": "tsc",
