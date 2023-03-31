@@ -1,0 +1,12 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = false
+
+[*.!tgz]
+charset = utf-8
+
+[*.{js,json}]
+indent_style = space
+intent_size = 2
