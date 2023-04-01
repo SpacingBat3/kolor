@@ -3,6 +3,8 @@
   "compilerOptions": {
     /* Specify the folder for .tsbuildinfo incremental compilation files. */
     "tsBuildInfoFile": "./.cache/buildInfo.json",
+    /* Specify where source files are stored. */
+    "rootDir": "./src/",
     /* Specify an output folder for all emitted files. */
     "outDir": "./dist/",
     /* Path where are emitted declaration files and their source maps. */
