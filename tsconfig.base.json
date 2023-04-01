@@ -22,6 +22,8 @@
     /* Do not emit anything if there's compilation error. */
     "noEmitOnError": true,
     /* Limit which packages are going to be included without referencing in source files. */
-    "types": ["node"]
+    "types": ["node"],
+    /* Disable module elision mechanism. This bans ESM syntax in CJS. */
+    "verbatimModuleSyntax": false
   }
 }

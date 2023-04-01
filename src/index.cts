@@ -131,8 +131,9 @@ const defaultExport = Object.freeze({
   unsafe: modifiers.other
 });
 
-export = Object.freeze({
-  default: defaultExport,
+export { 
   colors,
   modifiers
-});
+}
+
+export default defaultExport;
