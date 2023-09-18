@@ -9,6 +9,8 @@ docs/
 # Non-library code
 example/
 tests/
+# Source files
+src/
 # Hidden files and folders
 .*
 # Duplicate declarations
