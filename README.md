@@ -31,16 +31,16 @@ console.warn(colors.bold("==> "+colors.brightYellow("Warning:"))+" Something hap
 ### CommonJS: 
 
 ```js
-// Synchroniously with `require` (CommonJS):
+// Synchronously with `require` (CommonJS):
 const { colors, modifiers } = require("@spacingbat3/kolor")
 
-console.log(colors.purple("Colored text goes here."));
+console.log(colors.purple("Colorized text goes here."));
 
 // or, with "default" object
 
 const colors_2 = require("@spacingbat3/kolor").default;
 
-console.log(colors_2.purple("Colored text goes here."));
+console.log(colors_2.purple("Colorized text goes here."));
 
 // Async with `import` (ESM):
 import("@spacingbat3/kolor")
@@ -75,9 +75,9 @@ easily switch from `colors`, this module is not for you, neither `chalk` is.
 This project has a different philosophy that both of these projects. It's
 neither an ESM module nor has any rich features – it's much more simple, doing
 only some simple tests to detect if text should be colorized or not and being
-limited (at least for now) only to 16-bit color pallete. It might be however
-much more performant, as it uses ES2021 features to be much shorter, simplier
-and not being *bloated* with unnecesary colors.
+limited (at least for now) only to 16-bit color palete. It might be however
+much more performant, as it uses ES2021 features to be much shorter, simpler
+and not being *bloated* with unnecessary colors.
 
 Another difference (at least from `colors`) is that `kolor` separates some
 ANSI escape codes that are not working on all platforms, which you may find
