@@ -9,12 +9,8 @@
     "target": "es2022",
     /* Specify what module code is generated. */
     "module": "Node16",
-    /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
-    "declaration": true,
-    /* Generate source maps for d.ts files. */
-    "declarationMap": false,
     /* Create source map files for emitted JavaScript files. */
-    "sourceMap": true,
+    "sourceMap": false,
     /* Enable all strict type-checking options. */
     "strict": true,
     /* Skip type checking all .d.ts files. */

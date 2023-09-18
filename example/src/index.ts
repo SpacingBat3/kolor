@@ -1,9 +1,9 @@
 import {colors, modifiers} from "@spacingbat3/kolor";
 
 function printAll(name:string, object:Record<string,(x:string)=>string>) {
-    console.log(name+":");
+    console.log(modifiers.safe.bold(modifiers.safe.underline("%s:")),name);
     for (const key of Object.keys(object)) {
-        console.log(" • "+(object[key]?.(key)??"invalid"));
+        console.log("\n • "+(object[key]?.(key)??"invalid"));
     }
     console.log();
 }

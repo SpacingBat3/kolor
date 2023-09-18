@@ -1,12 +1,11 @@
-/* These tests will verify if library is using the right color codes.
- * As is uses values from node, there's chance it could break if 
- */
+/* These tests will verify if library is using the right color codes. */
 
 import {strictEqual} from "assert/strict";
 import {colors, modifiers} from "@spacingbat3/kolor";
 
 function mapIntoVT(code:number,text:string) {
-  return `\x1b[${code}m${text.replaceAll("\x1b[0m",`\x1b[${code}`)}\x1b[0m`;
+  const mask = (code >= 30 && code < 40) || (code >= 90 && code < 100) ? 39 : 49;
+  return `\x1b[${code}m${text.replaceAll("\x1b[0m",`\x1b[${code}`)}\x1b[${mask}m`;
 }
 
 function assertColor(name:keyof typeof colors,color:number) {

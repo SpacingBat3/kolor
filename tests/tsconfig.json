@@ -3,7 +3,11 @@
   /* Instructs the TypeScript compiler how to compile .ts files. */
   "compilerOptions": {
     /* Specify the folder for .tsbuildinfo incremental compilation files. */
-    "tsBuildInfoFile": "../.cache/buildInfo-tests.json"
+    "tsBuildInfoFile": "../.cache/buildInfo-tests.json",
+    /* Specify where source files are stored. */
+    "rootDir": "./src/",
+    /* Specify an output folder for all emitted files. */
+    "outDir": "./dist/"
   },
   /* Specifies a list of glob patterns that match files to be included in compilation. */
   "include": ["src/colors.ts"]

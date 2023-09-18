@@ -12,7 +12,7 @@
         "default": "./dist/index.js"
       },
       "require": {
-        "types": "./types/index.d.cts",
+        "types": "./types/index.d.ts",
         "default": "./dist/index.cjs"
       }
     }
@@ -22,7 +22,7 @@
     "test": "tsc -b tests && node tests/dist/colors.js",
     "prepack": "tsc",
     "build": "tsc",
-    "example": "tsc -b example && node example/dist/index.ts"
+    "example": "tsc -b example && node example/dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -58,5 +58,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "types": "./types"
+  "types": "./types/index.d.ts"
 }

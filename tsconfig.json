@@ -7,6 +7,10 @@
     "rootDir": "./src/",
     /* Specify an output folder for all emitted files. */
     "outDir": "./dist/",
+    /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
+    "declaration": true,
+    /* Generate source maps for d.ts files. */
+    "declarationMap": false,
     /* Path where are emitted declaration files and their source maps. */
     "declarationDir": "types"
   },

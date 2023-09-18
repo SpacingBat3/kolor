@@ -6,8 +6,8 @@
     "tsBuildInfoFile": "../.cache/buildInfo-example.json",
     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "target": "es2021",
-    /* Specify the root folder within your source files. */
-    "rootDir": "src",
+    /* Specify where source files are stored. */
+    "rootDir": "./src/",
     /* Specify an output folder for all emitted files. */
     "outDir": "./dist/"
   },

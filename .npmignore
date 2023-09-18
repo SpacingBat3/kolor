@@ -11,3 +11,5 @@ example/
 tests/
 # Hidden files and folders
 .*
+# Duplicate declarations
+types/index.d.cts
