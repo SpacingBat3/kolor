@@ -4,7 +4,7 @@ type looseString = string|number|bigint|boolean|null|undefined
 
 type stringify<T> = T extends string|number|bigint|boolean|null|undefined ? `${T}` : string;
 
-type colorsFunc<A extends number, D extends number> = <T extends looseString>(value:T) => `\x1b[${A}m${replace<stringify<T>,`${D}`,`${A}`>}\x1b[${D}m`
+type colorsFunc<A extends number, D extends number> = <T extends looseString>(value:T) => T|`\x1b[${A}m${replace<stringify<T>,`${D}`,`${A}`>}\x1b[${D}m`
 
 type resetFunc = <T extends looseString = "">(value:T) => `\x1b[0m${stringify<T>}`;
 
