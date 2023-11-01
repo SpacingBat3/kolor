@@ -105,11 +105,19 @@ const shouldUseColors = (() => {
 })();
 
 function mapTuple<T extends readonly [number, number]>(tuple: T){
-  if(shouldUseColors) {
-    const codes = Object.freeze(tuple.map(n => `\x1b[${n}m`) as [`\x1b[${T[0]}m`, `\x1b[${T[1]}m`])
-    return <V extends looseString>(value:V) => `${codes[0]}${String(value).replace(codes[1],codes[0]) as replace<V,`${T[0]}`,`${T[1]}`>}${codes[1]}` as const
-  }
-  return <V,>(value:V) => value;
+  const codes = Object.freeze(tuple.map(n => `\x1b[${n}m`) as [`\x1b[${T[0]}m`, `\x1b[${T[1]}m`]);
+  const colorizeFn = <V extends looseString>(value:V) => `${codes[0]}${String(value).replace(codes[1],codes[0]) as replace<V,`${T[0]}`,`${T[1]}`>}${codes[1]}` as const
+  if(shouldUseColors)
+    return colorizeFn;
+  /*
+   * This makes `kolor` to still colorize the input when it's already containing
+   * the proper ANSI characters to make type predictions accurate, greatly
+   * limit union type elements and disallow for invalid API use. SO YES, `kolor`
+   * SHOULD NOT BE USED on already colorized text if you expect from it to do
+   * no modifications to it, the `shouldUseColors` is a smart prevention way
+   * for cases it is not desirable to include any of ANSI codes in string.
+   */
+  return <V extends looseString>(value:V) => /^\x1b\[[0-9]m/.test(`${value}`) ? colorizeFn(value) : value;
 }
 
 function mapDict<T extends Dict>(dict: T) {
