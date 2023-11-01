@@ -21,6 +21,7 @@
         "plugin:@typescript-eslint/strict-type-checked"
     ],
     "rules": {
+        "no-control-regex": "off",
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-unsafe-argument": "error",
         "@typescript-eslint/no-unsafe-assignment": "error",
