@@ -2,15 +2,29 @@ type Dict = Record<string,readonly [number,number]>
 
 type looseString = string|number|bigint|boolean|null|undefined
 
-type stringify<T> = T extends string|number|bigint|boolean|null|undefined ? `${T}` : string;
+type Include<T, U> = T extends U ? T : never;
 
-type colorsFunc<A extends number, D extends number> = <T extends looseString>(value:T) => T|`\x1b[${A}m${replace<stringify<T>,`${D}`,`${A}`>}\x1b[${D}m`
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+type True = void;
+type False = never;
 
-type resetFunc = <T extends looseString = "">(value:T) => `\x1b[0m${stringify<T>}`;
+type STEquals<T, U> = T|U extends U ? True : False;
 
-type replace<V extends string, S extends string, R extends string> = V extends `${infer A extends string}${S}${infer Z extends string}`
-  ? `${A}${R}${replace<Z,S,R>}`
-  : V;
+type unC<T> = Exclude<T,`\x1b[${number}m${string}`>;
+
+type replace<V extends looseString, S extends looseString, R extends looseString> =
+  V extends `${infer A extends string}${S}${infer Z extends string}`
+    ? `${A}${R}${replace<Z,S,R>}`
+    : V;
+
+type colorsFunc<A extends number, D extends number> = <T extends looseString>(value:T) => unC<T>|
+  `\x1b[${A}m${replace<
+    STEquals<T,unC<T>> extends True ? T : Include<T,`\x1b[${number}m${string}`>,
+    D,
+    A
+  >}\x1b[${D}m`;
+
+type resetFunc = <T extends looseString = "">(value:T) => `\x1b[0m${T}`;
 
 type dictMap<T extends Dict> = {
   [P in keyof T]: P extends "reset" ? resetFunc : colorsFunc<T[P][0],T[P][1]>;
@@ -93,7 +107,7 @@ const shouldUseColors = (() => {
 function mapTuple<T extends readonly [number, number]>(tuple: T){
   if(shouldUseColors) {
     const codes = Object.freeze(tuple.map(n => `\x1b[${n}m`) as [`\x1b[${T[0]}m`, `\x1b[${T[1]}m`])
-    return <V extends looseString>(value:V) => `${codes[0]}${String(value).replace(codes[1],codes[0]) as replace<stringify<V>,`${T[0]}`,`${T[1]}`>}${codes[1]}` as const
+    return <V extends looseString>(value:V) => `${codes[0]}${String(value).replace(codes[1],codes[0]) as replace<V,`${T[0]}`,`${T[1]}`>}${codes[1]}` as const
   }
   return <V,>(value:V) => value;
 }
@@ -102,7 +116,7 @@ function mapDict<T extends Dict>(dict: T) {
   const functions = {} as Record<Extract<keyof T,string>,unknown>;
   for(const key in dict)
     if(key === "reset")
-      functions[key] = (<T extends looseString="">(value:T="" as T) => "\x1b[0m"+String(value) as `\x1b[0m${stringify<T>}`) satisfies resetFunc;
+      functions[key] = (<T extends looseString="">(value:T="" as T) => "\x1b[0m"+String(value) as `\x1b[0m${T}`) satisfies resetFunc;
     else {
       let tuple ; if((tuple = dict[key]))
         functions[key] = mapTuple(tuple);
