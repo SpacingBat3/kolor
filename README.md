@@ -83,6 +83,11 @@ Another difference (at least from `colors`) is that `kolor` separates some
 ANSI escape codes that are not working on all platforms, which you may find
 useful if your application is meant to be cross-platform.
 
+Since `v3.2.0` it also provides the type definitions for transforming the
+literal types, which makes TypeScript to accurately predict all combinations of
+types for the library and overall improves the type accuracy (not just for
+literals).
+
 ## Legal
 
 This project is licensed under the `ISC` license, which should be [distributed
