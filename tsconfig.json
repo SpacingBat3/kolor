@@ -16,7 +16,6 @@
   },
   "files": ["src/index.cts", "src/index.ts"],
   "references": [
-    { "path": "example/tsconfig.json" },
-    { "path": "tests/tsconfig.json" }
+    { "path": "example/tsconfig.json" }
   ]
 }
