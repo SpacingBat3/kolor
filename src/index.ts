@@ -125,10 +125,8 @@ function mapDict<T extends Dict>(dict: T) {
   for(const key in dict)
     if(key === "reset")
       functions[key] = (<T extends looseString="">(value:T="" as T) => "\x1b[0m"+String(value) as `\x1b[0m${T}`) satisfies resetFunc;
-    else {
-      let tuple ; if((tuple = dict[key]))
-        functions[key] = mapTuple(tuple);
-    }
+    else if(dict[key])
+      functions[key] = mapTuple(dict[key] as T[keyof T]);
   return functions as dictMap<T>;
 }
 
