@@ -2,11 +2,11 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     /* Specify the folder for .tsbuildinfo incremental compilation files. */
-    "tsBuildInfoFile": "./.cache/buildInfo.json",
+    "tsBuildInfoFile": ".cache/buildInfo.json",
     /* Specify where source files are stored. */
-    "rootDir": "./src/",
+    "rootDir": "src",
     /* Specify an output folder for all emitted files. */
-    "outDir": "./dist/",
+    "outDir": "dist",
     /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
     "declaration": true,
     /* Generate source maps for d.ts files. */
@@ -14,7 +14,7 @@
     /* Path where are emitted declaration files and their source maps. */
     "declarationDir": "types"
   },
-  "files": ["src/index.cts", "src/index.ts"],
+  "files": ["src/index.ts"],
   "references": [
     { "path": "example/tsconfig.json" }
   ]

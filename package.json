@@ -2,21 +2,9 @@
   "name": "@spacingbat3/kolor",
   "version": "4.0.0",
   "description": "A simple module to colorize your Node.js console.",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
   "type": "module",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./types/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./types/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
-    }
-  },
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "lint": "tsc && eslint --cache --cache-location .cache/eslint.json --ext ts .",
     "prepack": "tsc",
@@ -54,8 +42,13 @@
     "eslint": "^8.6.0",
     "typescript": "^5.0.3"
   },
+  "imports": {
+    "#spacingbat3/kolor": {
+      "types": "./types/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "publishConfig": {
     "access": "public"
-  },
-  "types": "./types"
+  }
 }
