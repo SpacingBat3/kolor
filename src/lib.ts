@@ -31,10 +31,8 @@ type colorsFunc<A extends number, D extends number> = <T extends looseString>(va
     A
   >}\x1b[${D}m`;
 
-type resetFunc = <T extends looseString = "">(value:T) => `\x1b[0m${T}`;
-
 type dictMap<T extends Dict> = {
-  [P in keyof T]: P extends "reset" ? resetFunc : colorsFunc<T[P][0],T[P][1]>;
+  [P in keyof T]: colorsFunc<T[P][0],T[P][1]>;
 }
 
 const modifiers_safe = Object.freeze({
@@ -138,10 +136,7 @@ function mapTuple<T extends readonly [number, number]>(tuple: T){
 function mapDict<T extends Dict>(dict: T) {
   const functions = {} as Record<Extract<keyof T,string>,unknown>;
   for(const key in dict) {
-    if(key === "reset")
-      functions[key] = (<T extends looseString="">(value:T="" as T) => "\x1b[0m"+String(value) as `\x1b[0m${T}`) satisfies resetFunc;
-    else if(dict[key])
-      functions[key] = mapTuple(dict[key] as T[keyof T]);
+    functions[key] = mapTuple(dict[key] as T[keyof T]);
     Object.defineProperty(functions[key],"name",{value:key,writable:false,enumerable:false,configurable:true});
   }
   return functions as dictMap<T>;
