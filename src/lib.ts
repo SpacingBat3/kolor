@@ -5,52 +5,85 @@
  */
 /* eslint-disable-next-line no-var */// This is global type override.
 declare var process: NodeJS.Process|undefined|Record<keyof never, unknown>&Record<"stdout"|"stderr",undefined|null|Record<keyof never,boolean|undefined>>;
+/** Like {@linkcode NodeJS.Dict} but only used for `satisfies` check. */
 type Dict = Readonly<Record<string,readonly [number,number]>>
-
-type looseString = string|number|bigint|boolean|null|undefined
-
-type Include<T, U> = T extends U ? T : never;
-
-// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-type True = void;
-type False = never;
-
-type STEquals<T, U> = T|U extends U ? True : False;
-
-type unC<T> = Exclude<T,`\x1b[${number}m${string}`>;
-
+/**
+ * Any primitive value that can be put into the template or converted to string
+ * automatically in meaningful way.
+ */
+type looseString = string|number|bigint|boolean|null|undefined;
+/**
+ * Helper type to remove ANSI VT control characters from type.
+ * @template T Type which should be matched for exclusion.
+ */
+type unColorize<T extends looseString> = Exclude<T,`\x1b[${number}m${string}`>;
+/**
+ * Helper type to replace all `S` substring instances with `R` in `V` string.
+ * @template V string to search in.
+ * @template S substring to search for.
+ * @template R substring to replace with.
+ */
 type replace<V extends looseString, S extends looseString, R extends looseString> =
-  V extends `${infer A extends string}${S}${infer Z extends string}`
-    ? `${A}${R}${replace<Z,S,R>}`
-    : V;
+  V extends `${infer A extends string}${S}${infer Z extends string}` ?
+    `${A}${R}${replace<Z,S,R>}` :
+    V;
 
-type colorsFunc<A extends number, D extends number> = <T extends looseString>(value:T) => unC<T>|
-  `\x1b[${A}m${replace<
-    STEquals<T,unC<T>> extends True ? T : Include<T,`\x1b[${number}m${string}`>,
-    D,
-    A
-  >}\x1b[${D}m`;
+/**
+ * Helper type to stringify arrays (aka. `.join()`).
+ * @template T array to stringify
+ */
+type arrJoin<T extends readonly looseString[]> = (
+  T extends [infer K extends looseString, ...infer R extends looseString[]] ?
+  R extends never[] ? `${K}` : `${K},${arrJoin<R>}` : T extends never[] ? "" : string
+);
 
+/**
+ * Helper type that adds type variant with ANSI VT control characters to type.
+ * @template T string-like type to process
+ * @template S ANSI escape char code at the beginning
+ * @template E ANSI escape char code at the end
+ */
+type colorize<T extends looseString, S extends number,E extends number> =
+  unColorize<T> | `\x1b[${S}m${replace<T,E,S>}\x1b[${S}m`
+
+/**
+ * Type that assigns color functions to a given `Dict`.
+ * @template D `Dict` to use as an input type.
+ */
 type dictMap<T extends Dict> = {
-  [P in keyof T]: colorsFunc<T[P][0],T[P][1]>;
+  [P in keyof T]: <U extends looseString|readonly looseString[]>(value:U) => (
+    colorize<U extends readonly looseString[]?arrJoin<U>:U,T[P][0],T[P][1]>
+  );
 }
 
 const modifiers_safe = Object.freeze({
+  /** Resets all modifiers (usually not needed, `kolor` takes care of it). */
   reset:     Object.freeze(<const>[0,  0]),
+  /** Renders bold font in the terminal. */
   bold:      Object.freeze(<const>[1, 22]),
+  /** Draws horizontal line below the text. */
   underline: Object.freeze(<const>[4, 24]),
+  /** Inverts background and foreground of the text. */
   inverse:   Object.freeze(<const>[7, 27])
 } as const) satisfies Dict;
 
 const modifiers_other = Object.freeze({
+  /** Makes the text color dimmed. */
   dim:             Object.freeze(<const>[ 2, 22]),
+  /** Renders italic font in the terminal. */
   italic:          Object.freeze(<const>[ 3, 23]),
+  /** Render text as blinking. Might be no-op sometimes due to accessibility reasons. */
   blink:           Object.freeze(<const>[ 5, 25]),
+  /** Like `blink`, but faster. Rarely implemented. */
   rapidBlink:      Object.freeze(<const>[ 6, 25]),
+  /** Makes the text invisible. */
   hidden:          Object.freeze(<const>[ 8, 28]),
+  /** Draws a line through the text. */
   strikethrough:   Object.freeze(<const>[ 9, 29]),
+  /** Like `underline`, but draws 2 lines instead one. */
   doubleunderline: Object.freeze(<const>[21, 24]),
   framed:          Object.freeze(<const>[51, 54]),
+  /** Draws horizontal line above the text. */
   overlined:       Object.freeze(<const>[53, 55])
 } as const) satisfies Dict;
 
@@ -178,6 +211,9 @@ const colors = alias(mapDict(colors_util), colors => ({
  * An object grouped by platform support, including functions to transform text
  * in the console to change it appearance (e.g. make it underlined) rather than
  * just set a specific font color.
+ *
+ * @example
+ * console.log(kolor.bold("User:")+" Hi there! ^_^")
  */
 const modifiers = Object.freeze({
   /**
@@ -208,6 +244,12 @@ const modifiers = Object.freeze({
   }))
 });
 
+/**
+ * A merged version of `kolor` module, providing both `colors` and `modifiers`
+ * at the root. Each function may take any parameter, convert it to string
+ * if possible and transform it to another string with requested decorations
+ * added.
+ */
 const defaultExport = Object.freeze({
   ...colors,
   ...modifiers.safe,
