@@ -1,3 +1,10 @@
+/**
+ * Global process variable, might be undefined or defined differently than in
+ * Node.js in case of non-Node runtimes. Hence, this library has it overwritten
+ * for its own global types scope, like so.
+ */
+/* eslint-disable-next-line no-var */// This is global type override.
+declare var process: NodeJS.Process|undefined|Record<keyof never, unknown>&Record<"stdout"|"stderr",undefined|null|Record<keyof never,boolean|undefined>>;
 type Dict = Readonly<Record<string,readonly [number,number]>>
 
 type looseString = string|number|bigint|boolean|null|undefined
@@ -88,18 +95,26 @@ const shouldUseColors = (() => {
   // We're in the browser console – this is unsupported yet.
   if("window" in globalThis)
     return false;
-  switch(process.argv.toString().match(/--color(?:|=)(always|auto|never)/)?.[1] ?? "auto") {
+  // Allow for non-Node-compatible runtimes to use this lib when they support
+  // ESM and set secret `__kolorTTY` global var to `true.
+  if(!("process" in globalThis) || !Array.isArray(process?.argv) || typeof process.stdout !== "object")
+    return "__kolorTTY" in globalThis && (<typeof globalThis & {__kolorTTY:unknown}>globalThis)["__kolorTTY"] === true;
+  switch(process.argv.join('=').match(/--color=(always|auto|never)/)?.[1] ?? "auto") {
     case "always":
       return  true;
     case  "never":
       return false;
     default:
+      // Disable by default for non-Node.js envs, at least those without
+      // node:process support (you can still enforce it with argv)
       return (
         // Detect if process it not piped
-        process.stdout.isTTY && process.stderr.isTTY
+        process.stdout?.isTTY && process.stderr?.isTTY &&
+        // Detect if we support colors in TTY
+        typeof process.stdout.hasColors === "function" ? !!process.stdout.hasColors(16) : false
       ) || (
         // Workaround for Electron on Windows
-        "electron" in process.versions && process.platform === "win32"
+        typeof process.versions === "object" && "electron" in (process.versions??{}) && process.platform === "win32"
       );
   }
 })();
