@@ -137,11 +137,13 @@ function mapTuple<T extends readonly [number, number]>(tuple: T){
 
 function mapDict<T extends Dict>(dict: T) {
   const functions = {} as Record<Extract<keyof T,string>,unknown>;
-  for(const key in dict)
+  for(const key in dict) {
     if(key === "reset")
       functions[key] = (<T extends looseString="">(value:T="" as T) => "\x1b[0m"+String(value) as `\x1b[0m${T}`) satisfies resetFunc;
     else if(dict[key])
       functions[key] = mapTuple(dict[key] as T[keyof T]);
+    Object.defineProperty(functions[key],"name",{value:key,writable:false,enumerable:false,configurable:true});
+  }
   return functions as dictMap<T>;
 }
 
