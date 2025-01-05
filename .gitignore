@@ -10,6 +10,8 @@ types/
 # Lockfiles (for people using alternative package managers)
 *lock*
 !package-lock.json
+# Generated documentation
+docs/api/
 # Hidden folders
 .*/
 !.github/

@@ -7,13 +7,14 @@
   "types": "types/lib.d.ts",
   "scripts": {
     "prelint": "tsc -b",
-    "lint": "eslint --cache --cache-location .cache/eslint.json --config config/eslint.mjs",
+    "lint": "eslint --cache --cache-location .cache/eslint.json --config .config/eslint.mjs",
     "prepack": "tsc",
     "build": "tsc",
     "preexample": "tsc -b example",
     "example": "node example/dist/index.js",
     "pretest": "tsc -b test",
-    "test": "node --test --experimental-strip-types"
+    "test": "node --test --experimental-strip-types",
+    "docs": "typedoc --options config/typedoc.mjs"
   },
   "repository": {
     "type": "git",
@@ -44,6 +45,7 @@
     "eslint": "^9.17.0",
     "eslint-import-resolver-typescript": "^3.7.0",
     "eslint-plugin-import-x": "^4.6.1",
+    "typedoc": "^0.27.6",
     "typescript": "^5.0.3",
     "typescript-eslint": "^8.19.0"
   },
