@@ -1,7 +1,7 @@
 {
   "name": "@spacingbat3/kolor",
   "version": "4.0.0",
-  "description": "A simple module to colorize your Node.js console.",
+  "description": "A simple module to colorize text for terminals.",
   "type": "module",
   "main": "dist/lib.js",
   "types": "types/lib.d.ts",
