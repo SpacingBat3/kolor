@@ -1,4 +1,4 @@
-import {colors, modifiers} from "#spacingbat3/kolor";
+import {colors, modifiers} from "#lib";
 
 function printAll(name:string, object:Record<string,(x:string)=>string>) {
     console.log(modifiers.safe.bold(modifiers.safe.underline("%s:")),name);

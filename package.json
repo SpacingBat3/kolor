@@ -3,8 +3,8 @@
   "version": "4.0.0",
   "description": "A simple module to colorize your Node.js console.",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "types/index.d.ts",
+  "main": "dist/lib.js",
+  "types": "types/lib.d.ts",
   "scripts": {
     "prelint": "tsc -b",
     "lint": "eslint --cache --cache-location .cache/eslint.json --config config/eslint.mjs",
@@ -46,9 +46,9 @@
     "typescript-eslint": "^8.19.0"
   },
   "imports": {
-    "#spacingbat3/kolor": {
-      "types": "./types/index.d.ts",
-      "default": "./dist/index.js"
+    "#lib": {
+      "types": "./types/lib.d.ts",
+      "default": "./dist/lib.js"
     }
   },
   "publishConfig": {

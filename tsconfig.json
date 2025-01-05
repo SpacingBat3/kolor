@@ -14,7 +14,7 @@
     /* Path where are emitted declaration files and their source maps. */
     "declarationDir": "types"
   },
-  "files": ["src/index.ts"],
+  "files": ["src/lib.ts"],
   "references": [
     { "path": "example/tsconfig.json" }
   ]

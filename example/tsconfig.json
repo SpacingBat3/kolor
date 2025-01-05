@@ -7,10 +7,10 @@
     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "target": "es2021",
     /* Specify where source files are stored. */
-    "rootDir": "./src/",
+    "rootDir": "src/",
     /* Specify an output folder for all emitted files. */
-    "outDir": "./dist/"
+    "outDir": "dist/"
   },
   /* Specifies a list of glob patterns that match files to be included in compilation. */
-  "include": ["src/index.ts"]
+  "files": ["src/main.ts"]
 }
