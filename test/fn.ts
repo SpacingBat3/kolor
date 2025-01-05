@@ -34,7 +34,7 @@ const kolor = await (async() => {
 })();
 
 for(const api of [kolor]) describe(`${api.name} works properly`, () => {
-  it("only applies colors for each function", t => {
+  it("does correct set of modifications to string", t => {
     const apisOk = [];
     let lastApi = "none";
     try {
@@ -52,7 +52,7 @@ for(const api of [kolor]) describe(`${api.name} works properly`, () => {
     }
     tOk(t,apisOk,api);
   })
-  it("applies each 16-bit palete color by word correctly", t => {
+  it("applies correct ANSI code that fits function name", t => {
     const ANSICodesMap = {
       // Use node:util for data source…
       ...inspect.colors,
@@ -83,7 +83,14 @@ for(const api of [kolor]) describe(`${api.name} works properly`, () => {
     }
     tOk(t,apisOk,api);
   })
-  it("has compatible color names and functionality with Node's `styleText` API", t => {
+  it("correctly combines multiple modifiers at once", t => {
+    assert.strictEqual(
+      kolor.reset(kolor.bold("bold "+kolor.blue("and blue"))+" "+kolor.red("or red"))+" with exceptions",
+      `\x1b[0m\x1b[1mbold \x1b[34mand blue\x1b[39m\x1b[22m \x1b[31mor red\x1b[39m\x1b[0m with exceptions`
+    )
+    t.diagnostic("apis used during test: reset, bold, blue, red")
+  })
+  it("has compatible naming convention and functionality with Node's `styleText` API", t => {
     const apisOk = [];
     let lastApi="none";
     try {
