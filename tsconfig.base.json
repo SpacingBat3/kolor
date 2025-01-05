@@ -11,15 +11,11 @@
     "module": "Node16",
     /* Create source map files for emitted JavaScript files. */
     "sourceMap": false,
-    /* Enable all strict type-checking options. */
-    "strict": true,
     /* Skip type checking all .d.ts files. */
     "skipLibCheck": true,
     /* Do not emit anything if there's compilation error. */
     "noEmitOnError": true,
-    /* Limit which packages are going to be included without referencing in source files. */
-    "types": ["node"],
-    /* Disable module elision mechanism. This bans ESM syntax in CJS. */
-    "verbatimModuleSyntax": false
+    /* Disable module elision mechanism. */
+    "verbatimModuleSyntax": true
   }
 }

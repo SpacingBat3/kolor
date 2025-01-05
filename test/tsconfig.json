@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    /* Specify the folder for .tsbuildinfo incremental compilation files. */
+    "tsBuildInfoFile": "../.cache/buildInfo-test.json",
+    /* Avoid emitting anything at all (only check types). */
+    "noEmit": true
+  },
+  "files": ["fn.ts"]
+}

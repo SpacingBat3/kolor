@@ -11,7 +11,9 @@
     "prepack": "tsc",
     "build": "tsc",
     "preexample": "tsc -b example",
-    "example": "node example/dist/index.js"
+    "example": "node example/dist/index.js",
+    "pretest": "tsc -b test",
+    "test": "node --test --experimental-strip-types"
   },
   "repository": {
     "type": "git",
