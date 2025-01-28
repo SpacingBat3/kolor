@@ -30,11 +30,12 @@ type replace<V extends looseString, S extends looseString, R extends looseString
 
 /**
  * Helper type to stringify arrays (aka. `.join()`).
- * @template T array to stringify
+ * @template T array to stringify or looseString to return
  */
-type arrJoin<T extends readonly looseString[]> = (
+type arrJoin<T extends readonly looseString[]|looseString> = (
   T extends [infer K extends looseString, ...infer R extends looseString[]] ?
-  R extends never[] ? `${K}` : `${K},${arrJoin<R>}` : T extends never[] ? "" : string
+  R extends never[] ? `${K}` : `${K},${arrJoin<R>}` : T extends never[] ? "" :
+  T extends looseString ? T : string
 );
 
 /**
@@ -52,75 +53,9 @@ type colorize<T extends looseString, S extends number,E extends number> =
  */
 type dictMap<T extends Dict> = {
   [P in keyof T]: <U extends looseString|readonly looseString[]>(value:U) => (
-    colorize<U extends readonly looseString[]?arrJoin<U>:U,T[P][0],T[P][1]>
+    colorize<arrJoin<U>,T[P][0],T[P][1]>
   );
 }
-
-const modifiers_safe = Object.freeze({
-  /** Resets all modifiers (usually not needed, `kolor` takes care of it). */
-  reset:     Object.freeze(<const>[0,  0]),
-  /** Renders bold font in the terminal. */
-  bold:      Object.freeze(<const>[1, 22]),
-  /** Draws horizontal line below the text. */
-  underline: Object.freeze(<const>[4, 24]),
-  /** Inverts background and foreground of the text. */
-  inverse:   Object.freeze(<const>[7, 27])
-} as const) satisfies Dict;
-
-const modifiers_other = Object.freeze({
-  /** Makes the text color dimmed. */
-  dim:             Object.freeze(<const>[ 2, 22]),
-  /** Renders italic font in the terminal. */
-  italic:          Object.freeze(<const>[ 3, 23]),
-  /** Render text as blinking. Might be no-op sometimes due to accessibility reasons. */
-  blink:           Object.freeze(<const>[ 5, 25]),
-  /** Like `blink`, but faster. Rarely implemented. */
-  rapidBlink:      Object.freeze(<const>[ 6, 25]),
-  /** Makes the text invisible. */
-  hidden:          Object.freeze(<const>[ 8, 28]),
-  /** Draws a line through the text. */
-  strikethrough:   Object.freeze(<const>[ 9, 29]),
-  /** Like `underline`, but draws 2 lines instead one. */
-  doubleunderline: Object.freeze(<const>[21, 24]),
-  framed:          Object.freeze(<const>[51, 54]),
-  /** Draws horizontal line above the text. */
-  overlined:       Object.freeze(<const>[53, 55])
-} as const) satisfies Dict;
-
-const colors_util = Object.freeze({
-  black:           Object.freeze(<const>[ 30, 39]),
-  red:             Object.freeze(<const>[ 31, 39]),
-  green:           Object.freeze(<const>[ 32, 39]),
-  yellow:          Object.freeze(<const>[ 33, 39]),
-  blue:            Object.freeze(<const>[ 34, 39]),
-  magenta:         Object.freeze(<const>[ 35, 39]),
-  cyan:            Object.freeze(<const>[ 36, 39]),
-  white:           Object.freeze(<const>[ 37, 39]),
-  bgBlack:         Object.freeze(<const>[ 40, 49]),
-  bgRed:           Object.freeze(<const>[ 41, 49]),
-  bgGreen:         Object.freeze(<const>[ 42, 49]),
-  bgYellow:        Object.freeze(<const>[ 43, 49]),
-  bgBlue:          Object.freeze(<const>[ 44, 49]),
-  bgMagenta:       Object.freeze(<const>[ 45, 49]),
-  bgCyan:          Object.freeze(<const>[ 46, 49]),
-  bgWhite:         Object.freeze(<const>[ 47, 49]),
-  gray:            Object.freeze(<const>[ 90, 39]),
-  redBright:       Object.freeze(<const>[ 91, 39]),
-  greenBright:     Object.freeze(<const>[ 92, 39]),
-  yellowBright:    Object.freeze(<const>[ 93, 39]),
-  blueBright:      Object.freeze(<const>[ 94, 39]),
-  magentaBright:   Object.freeze(<const>[ 95, 39]),
-  cyanBright:      Object.freeze(<const>[ 96, 39]),
-  whiteBright:     Object.freeze(<const>[ 97, 39]),
-  bgGray:          Object.freeze(<const>[100, 49]),
-  bgRedBright:     Object.freeze(<const>[101, 49]),
-  bgGreenBright:   Object.freeze(<const>[102, 49]),
-  bgYellowBright:  Object.freeze(<const>[103, 49]),
-  bgBlueBright:    Object.freeze(<const>[104, 49]),
-  bgMagentaBright: Object.freeze(<const>[105, 49]),
-  bgCyanBright:    Object.freeze(<const>[106, 49]),
-  bgWhiteBright:   Object.freeze(<const>[107, 49])
-} as const) satisfies Dict;
 
 const shouldUseColors = (() => {
   // We're in the browser console – this is unsupported yet.
@@ -182,6 +117,56 @@ function alias<T extends object,R extends object>(value:T, hook:(value:T)=>R) {
   });
 }
 
+const modifiersObj = Object.freeze({
+  safe: alias(mapDict({
+    /** Resets all modifiers (usually not needed, `kolor` takes care of it). */
+    reset:     [0,  0],
+    /** Renders bold font in the terminal. */
+    bold:      [1, 22],
+    /** Draws horizontal line below the text. */
+    underline: [4, 24],
+    /** Inverts background and foreground of the text. */
+    inverse:   [7, 27]
+  } as const satisfies Dict), modifiers => ({
+    /** An alias of `modifiers.safe.inverse`. */
+    swapColors: modifiers.inverse,
+    /** An alias of `modifiers.safe.inverse`. */
+    swapcolors: modifiers.inverse,
+  })),
+  other: alias(mapDict({
+    /** Makes the text color dimmed. */
+    dim:             [ 2, 22],
+    /** Renders italic font in the terminal. */
+    italic:          [ 3, 23],
+    /** Render text as blinking. Might be no-op sometimes due to accessibility reasons. */
+    blink:           [ 5, 25],
+    /** Like `blink`, but faster. Rarely implemented. */
+    rapidBlink:      [ 6, 25],
+    /** Makes the text invisible. */
+    hidden:          [ 8, 28],
+    /** Draws a line through the text. */
+    strikethrough:   [ 9, 29],
+    /** Like `underline`, but draws 2 lines instead one. */
+    doubleunderline: [21, 24],
+    framed:          [51, 54],
+    /** Draws horizontal line above the text. */
+    overlined:       [53, 55]
+  } as const satisfies Dict), ({dim,strikethrough,hidden,doubleunderline}) => ({
+    /** An alias of `dim`. */
+    faint: dim,
+    /** An alias of `strikethrough`. */
+    strikeThrough: strikethrough,
+    /** An alias of `strikethrough`. */
+    crossedout: strikethrough,
+    /** An alias of `strikethrough`. */
+    crossedOut: strikethrough,
+    /** An alias of `hidden`. */
+    conceal: hidden,
+    /** An alias of `doubleunderline`. */
+    doubleUnderline: doubleunderline
+  }))
+});
+
 /**
  * An object containing multiple functions used to colorize the text.
  *
@@ -189,24 +174,97 @@ function alias<T extends object,R extends object>(value:T, hook:(value:T)=>R) {
  * // Print error in the console.
  * console.error(colors.red("[Error]")+" Something's not right...")
  */
-const colors = alias(mapDict(colors_util), colors => ({
-  /** An alias of `colors.magenta`. */
-  purple: colors.magenta,
-  /** An alias of `colors.magentaBg`. */
-  bgPurple: colors.bgMagenta,
-  /** An alias of `colors.white`. */
-  lightGray: colors.white,
-  /** An alias of `colors.white`. */
-  lightGrey: colors.white,
-  /** An alias of `colors.gray`. */
-  grey: colors.gray,
-  /** An alias of `colors.gray`. */
-  blackBright: colors.gray,
-  /** An alias of `colors.bgGray. */
-  bgGrey: colors.bgGray,
-  /** An alias of `colors.bgGray`. */
-  bgBlackBright: colors.bgGray
+const colorsObj = alias(mapDict({
+  black:           [ 30, 39],
+  red:             [ 31, 39],
+  green:           [ 32, 39],
+  yellow:          [ 33, 39],
+  blue:            [ 34, 39],
+  magenta:         [ 35, 39],
+  cyan:            [ 36, 39],
+  white:           [ 37, 39],
+  bgBlack:         [ 40, 49],
+  bgRed:           [ 41, 49],
+  bgGreen:         [ 42, 49],
+  bgYellow:        [ 43, 49],
+  bgBlue:          [ 44, 49],
+  bgMagenta:       [ 45, 49],
+  bgCyan:          [ 46, 49],
+  bgWhite:         [ 47, 49],
+  gray:            [ 90, 39],
+  redBright:       [ 91, 39],
+  greenBright:     [ 92, 39],
+  yellowBright:    [ 93, 39],
+  blueBright:      [ 94, 39],
+  magentaBright:   [ 95, 39],
+  cyanBright:      [ 96, 39],
+  whiteBright:     [ 97, 39],
+  bgGray:          [100, 49],
+  bgRedBright:     [101, 49],
+  bgGreenBright:   [102, 49],
+  bgYellowBright:  [103, 49],
+  bgBlueBright:    [104, 49],
+  bgMagentaBright: [105, 49],
+  bgCyanBright:    [106, 49],
+  bgWhiteBright:   [107, 49]
+} as const satisfies Dict), ({white,magenta,bgMagenta,gray,bgGray}) => ({
+  /** An alias of `magenta`. */
+  purple: magenta,
+  /** An alias of `magentaBg`. */
+  bgPurple: bgMagenta,
+  /** An alias of `white`. */
+  lightGray: white,
+  /** An alias of `white`. */
+  lightGrey: white,
+  /** An alias of `gray`. */
+  grey: gray,
+  /** An alias of `gray`. */
+  blackBright: gray,
+  /** An alias of `bgGray`. */
+  bgGrey: bgGray,
+  /** An alias of `bgGray`. */
+  bgBlackBright: bgGray
 }));
+
+type colors = typeof colorsObj;
+type modifiers_safe = typeof modifiersObj["safe"]
+type modifiers_other = typeof modifiersObj["other"]
+interface ModifiersSafe extends modifiers_safe {}
+interface ModifiersOther extends modifiers_other {}
+interface Colors extends colors {}
+
+interface Modifiers {
+  /** Modifiers working fine across most popular platforms/consoles. */
+  safe: ModifiersSafe;
+  /** Other modifiers that may not work with all consoles (e.g. `cmd.exe`). */
+  other: ModifiersOther;
+}
+
+interface DefaultExport extends Colors,ModifiersSafe {
+  /** Other modifiers that may not work with all consoles (e.g. `cmd.exe`). */
+  unsafe: ModifiersOther
+}
+
+/**
+ * A merged version of `kolor` module, providing both `colors` and `modifiers`
+ * at the root. Each function may take any parameter, convert it to string
+ * if possible and transform it to another string with requested decorations
+ * added.
+ */
+const defaultExport:DefaultExport = Object.freeze({
+  ...colorsObj,
+  ...modifiersObj.safe,
+  unsafe: modifiersObj.other
+});
+
+/**
+ * An object containing multiple functions used to colorize the text.
+ *
+ * @example
+ * // Print error in the console.
+ * console.error(colors.red("[Error]")+" Something's not right...")
+ */
+const colors:Colors = colorsObj;
 /**
  * An object grouped by platform support, including functions to transform text
  * in the console to change it appearance (e.g. make it underlined) rather than
@@ -215,50 +273,20 @@ const colors = alias(mapDict(colors_util), colors => ({
  * @example
  * console.log(kolor.bold("User:")+" Hi there! ^_^")
  */
-const modifiers = Object.freeze({
-  /**
-   * Modifiers working fine across most popular platforms/consoles.
-   */
-  safe: alias(mapDict(modifiers_safe), mod => ({
-    /** An alias of `modifiers.safe.inverse`. */
-    swapColors: mod.inverse,
-    /** An alias of `modifiers.safe.inverse`. */
-    swapcolors: mod.inverse,
-  })),
-  /**
-   * Other modifiers that may not work with all consoles (e.g. `cmd.exe`).
-   */
-  other: alias(mapDict(modifiers_other), mod => ({
-    /** An alias of `modifiers.other.dim`. */
-    faint: mod.dim,
-    /** An alias of `modifiers.other.strikethrough`. */
-    strikeThrough: mod.strikethrough,
-    /** An alias of `modifiers.other.strikethrough`. */
-    crossedout: mod.strikethrough,
-    /** An alias of `modifiers.other.strikethrough`. */
-    crossedOut: mod.strikethrough,
-    /** An alias of `modifiers.other.hidden`. */
-    conceal: mod.hidden,
-    /** An alias of `modifiers.other.doubleunderline`. */
-    doubleUnderline: mod.doubleunderline
-  }))
-});
-
-/**
- * A merged version of `kolor` module, providing both `colors` and `modifiers`
- * at the root. Each function may take any parameter, convert it to string
- * if possible and transform it to another string with requested decorations
- * added.
- */
-const defaultExport = Object.freeze({
-  ...colors,
-  ...modifiers.safe,
-  unsafe: modifiers.other
-});
+const modifiers:Modifiers = modifiersObj;
 
 export {
   colors,
   modifiers
+}
+
+export type {
+  Colors,
+  Modifiers,
+  ModifiersSafe,
+  ModifiersOther,
+  DefaultExport,
+  looseString
 }
 
 export default defaultExport;

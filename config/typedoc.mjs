@@ -16,7 +16,7 @@ const config = {
   excludeExternals: false,
   excludePrivate: false,
   intentionallyNotExported: [
-    "dictMap", "colorize", "looseString", "arrJoin"
+   "colorsObj", "colorize", "arrJoin"
   ],
   sourceLinkTemplate: "https://github.com/SpacingBat3/kolor/blob/{gitRevision}/{path}#L{line}",
   readme: "../README.md",
